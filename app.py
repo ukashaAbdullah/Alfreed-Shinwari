@@ -71,7 +71,7 @@ tabs = st.tabs(["🏠 Home", "📖 Full Menu", "🛒 Cart & Checkout"])
 
 # 1. HOME TAB
 with tabs[0]:
-    st.image("https://images.unsplash.com/photo-1555126634-323283e090fa?w=1200&q=80", use_column_width=True, caption="Experience the best traditional dining in Chowk Azam.")
+    st.image("https://images.unsplash.com/photo-1555126634-323283e090fa?w=1200&q=80", use_container_width=True, caption="Experience the best traditional dining in Chowk Azam.")
     
     st.subheader("🌟 Signature Dishes")
     cols = st.columns(3)
