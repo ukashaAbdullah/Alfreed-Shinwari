@@ -179,50 +179,77 @@ st.markdown("""
         font-family: 'Inter', sans-serif;
     }
 
+    /* Responsive Top Header */
     .kfc-navbar {
         background-color: #FFFFFF;
-        border-bottom: 2px solid #EAEAEA;
-        padding: 14px 28px;
+        border: 1px solid #EAEAEA;
+        border-radius: 10px;
+        padding: 12px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: -4rem -5rem 2rem -5rem;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        margin: 0 0 1.5rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        box-sizing: border-box;
+        width: 100%;
     }
     .kfc-brand {
         font-family: 'Oswald', sans-serif;
-        font-size: 28px;
+        font-size: 24px;
         font-weight: 800;
         color: #E4002B;
-        letter-spacing: 1.5px;
+        letter-spacing: 1px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
+        white-space: nowrap;
     }
     .kfc-pills {
         display: flex;
-        gap: 12px;
+        gap: 8px;
     }
     .kfc-pill-active {
         background-color: #FFFFFF;
         border: 2px solid #E4002B;
         color: #E4002B;
         font-weight: 700;
-        font-size: 13px;
-        padding: 6px 18px;
+        font-size: 12px;
+        padding: 5px 14px;
         border-radius: 4px;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
     .kfc-pill-dim {
         background-color: #F1F1F1;
         border: 1px solid #E0E0E0;
         color: #666666;
         font-weight: 600;
-        font-size: 13px;
-        padding: 6px 18px;
+        font-size: 12px;
+        padding: 5px 14px;
         border-radius: 4px;
         text-transform: uppercase;
+    }
+    .kfc-cart-badge {
+        font-family: 'Oswald', sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: #E4002B;
+        white-space: nowrap;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 768px) {
+        .kfc-navbar {
+            padding: 10px 12px;
+        }
+        .kfc-brand {
+            font-size: 18px;
+        }
+        .kfc-pills {
+            display: none; /* Hides Delivery/Pickup pills on phone screens to prevent overflowing */
+        }
+        .kfc-cart-badge {
+            font-size: 14px;
+        }
     }
 
     .kfc-section-title {
@@ -346,6 +373,9 @@ st.markdown("""
 # ============================================================
 # TOP BRANDING NAVBAR
 # ============================================================
+# ============================================================
+# TOP BRANDING NAVBAR
+# ============================================================
 total_cart_items = sum(st.session_state.cart.values())
 cart_text = f"🛒 CART ({total_cart_items})" if total_cart_items > 0 else "🛒 CART (0)"
 
@@ -356,7 +386,7 @@ st.markdown(f"""
         <span class="kfc-pill-active">🛵 DELIVERY</span>
         <span class="kfc-pill-dim">🏪 PICKUP</span>
     </div>
-    <div style="font-family:'Oswald',sans-serif; font-size:16px; font-weight:700; color:#E4002B;">
+    <div class="kfc-cart-badge">
         {cart_text}
     </div>
 </div>
