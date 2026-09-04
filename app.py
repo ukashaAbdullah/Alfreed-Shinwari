@@ -8,7 +8,7 @@ from datetime import datetime
 st.set_page_config(page_title="Alfred Shanwari & Restaurant", page_icon="🍖", layout="wide")
 
 # Owner's WhatsApp Number (Alfred Shanwari's actual number)
-OWNER_WHATSAPP = "923026200764" 
+OWNER_WHATSAPP = "923317096731" 
 ORDERS_FILE = "orders.csv"
 
 # Initialize Session State for Cart
