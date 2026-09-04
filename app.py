@@ -90,7 +90,7 @@ MENU_DATA = [
             {
                 "id": "bbq_5", "name": "Chicken Tikka (Leg/Breast)", "price": 350,
                 "desc": "Quarter Chicken piece marinated in spicy yogurt",
-                "img": "https://images.unsplash.com/photo-1628296068228-5696df3f4ddb?w=600&auto=format&fit=crop&q=80"
+                "img": "https://images.unsplash.com/photo-1652545296882-cf7f118c4df5?q=80&w=1176&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             },
             {
                 "id": "bbq_6", "name": "Reshmi Kebab", "price": 600,
@@ -145,7 +145,7 @@ MENU_DATA = [
             {
                 "id": "bv_3", "name": "Sweet Lassi", "price": 180,
                 "desc": "Thick Traditional Churned Sweet Yogurt",
-                "img": "https://images.unsplash.com/photo-1571006682878-8378d3869255?w=600&auto=format&fit=crop&q=80"
+                "img": "https://media.istockphoto.com/id/1008799838/photo/image-of-a-glass-of-lassi-made-from-milk-curd.jpg?s=1024x1024&w=is&k=20&c=rWQ0jGz_jNTHWeDnUcgBQlwMVOeY0Ad-OtKk-z1pIMg="
             },
             {
                 "id": "bv_4", "name": "Soft Drink (Can)", "price": 120,
@@ -155,7 +155,7 @@ MENU_DATA = [
             {
                 "id": "bv_5", "name": "Mineral Water (Large)", "price": 100,
                 "desc": "1.5L Chilled Water Bottle",
-                "img": "https://images.unsplash.com/photo-1548839140-29a749e1bc4c?w=600&auto=format&fit=crop&q=80"
+                "img": "https://images.unsplash.com/photo-1601418934026-99fbe94b5f85?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             }
         ]
     }
