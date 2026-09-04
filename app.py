@@ -5,164 +5,131 @@ import os
 from datetime import datetime
 
 # ============================================================
-# APP & RESTAURANT CONFIGURATION
+# APP CONFIGURATION
 # ============================================================
 st.set_page_config(
-    page_title="Alfred Shanwari & Restaurant",
-    page_icon="🍖",
-    layout="wide"
+    page_title="Alfred Shinwari & Restaurant",
+    page_icon="🍗",
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
-# Put the exact topic you subscribed to in the ntfy mobile app here:
-NTFY_TOPIC = "your_secret_topic_here" 
+# Put your exact ntfy topic name here:
+NTFY_TOPIC = "alfred_orders_chowk99" 
 
 ORDERS_FILE = "orders.csv"
 GOOGLE_MAPS_LINK = "https://maps.app.goo.gl/hBRGvxccnKNYkEAAA"
 DELIVERY_FEE = 150
 
-# Initialize Cart
+# Initialize Cart State
 if "cart" not in st.session_state:
     st.session_state.cart = {}
 
 # ============================================================
-# COMPREHENSIVE MENU
+# MENU DATA (HIGH-RES CURATED FOOD ASSETS)
 # ============================================================
 MENU_DATA = [
     {
-        "category": "🍗 Shinwari & Karahi Specials",
+        "category": "BEST SELLERS & SPECIALS",
         "items": [
             {
                 "id": "sk_1",
-                "name": "Special Mutton Shinwari Karahi",
+                "name": "Mutton Shinwari Karahi",
                 "price": 2900,
-                "portion": "1 KG (Fresh Meat & Desi Ghee)",
-                "img": "https://images.unsplash.com/photo-1606471191009-63994c53433b?w=600&auto=format&fit=crop&q=80"
+                "desc": "1 KG Fresh Mutton prepared in Desi Ghee & Tomatoes",
+                "img": "https://images.unsplash.com/photo-1545247181-516773cae754?w=600&auto=format&fit=crop&q=80"
             },
             {
                 "id": "sk_2",
-                "name": "Chicken Namkeen Shinwari",
+                "name": "Namkeen Chicken Karahi",
                 "price": 1600,
-                "portion": "1 KG (Salt & Tomato Gravy)",
+                "desc": "1 KG Traditional Namkeen recipe with Green Chillies",
                 "img": "https://images.unsplash.com/photo-1596797038530-2c107229654b?w=600&auto=format&fit=crop&q=80"
             },
             {
                 "id": "sk_3",
                 "name": "Chicken White Karahi",
                 "price": 1750,
-                "portion": "1 KG (Creamy Yogurt Base)",
+                "desc": "1 KG Creamy Mild Curry with Fresh Yogurt & Almonds",
                 "img": "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=600&auto=format&fit=crop&q=80"
             },
-            {
-                "id": "sk_4",
-                "name": "Half Mutton Karahi",
-                "price": 1550,
-                "portion": "0.5 KG (Cooked to Order)",
-                "img": "https://images.unsplash.com/photo-1545247181-516773cae754?w=600&auto=format&fit=crop&q=80"
-            }
-        ]
-    },
-    {
-        "category": "🔥 Charcoal BBQ & Grills",
-        "items": [
             {
                 "id": "bbq_1",
                 "name": "Peshawari Chapli Kebab",
                 "price": 320,
-                "portion": "1 Large Piece (Tender Beef)",
-                "img": "https://images.unsplash.com/photo-1625938146369-adc83368bda7?w=600&auto=format&fit=crop&q=80"
-            },
+                "desc": "Large Tender Pan-Fried Spiced Minced Beef Patty",
+                "img": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&auto=format&fit=crop&q=80"
+            }
+        ]
+    },
+    {
+        "category": "CHARCOAL BBQ & GRILLS",
+        "items": [
             {
                 "id": "bbq_2",
                 "name": "Chicken Malai Boti",
                 "price": 650,
-                "portion": "8 Succulent Melt-in-Mouth Skewers",
+                "desc": "8 Tender Skewers marinated in Velvet Fresh Cream",
                 "img": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=600&auto=format&fit=crop&q=80"
             },
             {
                 "id": "bbq_3",
                 "name": "Mutton Tikka Boti",
                 "price": 950,
-                "portion": "Charcoal Smoked Spicy Cubes",
-                "img": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&auto=format&fit=crop&q=80"
+                "desc": "Charcoal Smoked Spicy Juicy Mutton Cuts",
+                "img": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=600&auto=format&fit=crop&q=80"
             },
             {
                 "id": "bbq_4",
                 "name": "Beef Seekh Kebab",
                 "price": 550,
-                "portion": "4 Seasoned Minced Skewers",
-                "img": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=600&auto=format&fit=crop&q=80"
+                "desc": "4 Hand-Rolled Charcoal Grilled Minced Skewers",
+                "img": "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=600&auto=format&fit=crop&q=80"
+            },
+            {
+                "id": "sk_4",
+                "name": "Half Mutton Karahi",
+                "price": 1550,
+                "desc": "0.5 KG Freshly Prepared Shinwari Style Karahi",
+                "img": "https://images.unsplash.com/photo-1589302168068-964664d93dc0?w=600&auto=format&fit=crop&q=80"
             }
         ]
     },
     {
-        "category": "🍚 Rice & Tandoor",
+        "category": "RICE, TANDOOR & DRINKS",
         "items": [
             {
                 "id": "rt_1",
-                "name": "Peshawari Kabuli Pulao",
+                "name": "Special Kabuli Pulao",
                 "price": 850,
-                "portion": "With Braised Meat, Raisins & Carrots",
-                "img": "https://images.unsplash.com/photo-1574484284002-952d92456975?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                "id": "rt_2",
-                "name": "Special Chicken Biryani",
-                "price": 450,
-                "portion": "Aromatic Spiced Basmati Rice",
+                "desc": "Aromatic Saffron Basmati topped with Raisins & Braised Beef",
                 "img": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80"
             },
             {
                 "id": "rt_3",
-                "name": "Special Roghani Naan",
+                "name": "Sesame Roghani Naan",
                 "price": 70,
-                "portion": "Sesame & Pure Butter Glaze",
+                "desc": "Clay-Oven Baked with Pure Butter & Sesame Seeds",
                 "img": "https://images.unsplash.com/photo-1626074353765-517a681e40be?w=600&auto=format&fit=crop&q=80"
             },
             {
-                "id": "rt_4",
-                "name": "Tandoori Sada Roti",
-                "price": 25,
-                "portion": "Fresh Whole Wheat Flatbread",
-                "img": "https://images.unsplash.com/photo-1509722747041-616f39b57569?w=600&auto=format&fit=crop&q=80"
-            }
-        ]
-    },
-    {
-        "category": "☕ Traditional Beverages",
-        "items": [
-            {
                 "id": "bv_1",
-                "name": "Peshawari Qahwa (Kahwa)",
+                "name": "Peshawari Green Qahwa",
                 "price": 100,
-                "portion": "Cardamom & Saffron Green Tea",
-                "img": "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=600&auto=format&fit=crop&q=80"
+                "desc": "Traditional Cardamom, Mint & Saffron Green Tea",
+                "img": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=600&auto=format&fit=crop&q=80"
             },
             {
                 "id": "bv_2",
                 "name": "Fresh Mint Margarita",
                 "price": 250,
-                "portion": "Chilled Mint & Lemon Cooler",
+                "desc": "Chilled Fresh Mint Cooler with Lemon Spritz",
                 "img": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                "id": "bv_3",
-                "name": "Sweet Meethi Lassi",
-                "price": 180,
-                "portion": "Thick Traditional Churned Yogurt",
-                "img": "https://images.unsplash.com/photo-1571006682878-8378d3869255?w=600&auto=format&fit=crop&q=80"
-            },
-            {
-                "id": "bv_4",
-                "name": "Soft Drink (Can)",
-                "price": 120,
-                "portion": "250ml Chilled",
-                "img": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&auto=format&fit=crop&q=80"
             }
         ]
     }
 ]
 
-# Quick ID Lookup map
 ITEM_LOOKUP = {
     item["id"]: {**item, "category": cat["category"]}
     for cat in MENU_DATA
@@ -170,86 +137,219 @@ ITEM_LOOKUP = {
 }
 
 # ============================================================
-# UNIFORM CARD STYLING & COMPACT BANNER CSS
+# KFC-INSPIRED STYLING (CSS)
 # ============================================================
 st.markdown("""
 <style>
-    .hero-banner {
-        position: relative;
-        height: 220px;
-        border-radius: 14px;
-        background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1555126634-323283e090fa?w=1200&auto=format&fit=crop&q=80');
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: white;
-        text-align: center;
-        margin-bottom: 25px;
-        padding: 15px;
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700;800&family=Inter:wght@400;600;700&display=swap');
+
+    /* Global Base */
+    .stApp {
+        background-color: #F8F9FA;
+        font-family: 'Inter', sans-serif;
     }
-    .hero-banner h1 {
-        color: #FFFFFF !important;
-        font-size: 32px;
+
+    /* Top KFC-Style Header */
+    .kfc-navbar {
+        background-color: #FFFFFF;
+        border-bottom: 2px solid #EAEAEA;
+        padding: 14px 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: -4rem -5rem 2rem -5rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    .kfc-brand {
+        font-family: 'Oswald', sans-serif;
+        font-size: 28px;
         font-weight: 800;
-        margin: 0;
+        color: #E4002B;
+        letter-spacing: 1.5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .kfc-pills {
+        display: flex;
+        gap: 12px;
+    }
+    .kfc-pill-active {
+        background-color: #FFFFFF;
+        border: 2px solid #E4002B;
+        color: #E4002B;
+        font-weight: 700;
+        font-size: 13px;
+        padding: 6px 18px;
+        border-radius: 4px;
+        text-transform: uppercase;
         letter-spacing: 0.5px;
     }
-    .hero-banner p {
-        color: #F0F0F0;
-        font-size: 15px;
-        margin: 6px 0 0 0;
+    .kfc-pill-dim {
+        background-color: #F1F1F1;
+        border: 1px solid #E0E0E0;
+        color: #666666;
+        font-weight: 600;
+        font-size: 13px;
+        padding: 6px 18px;
+        border-radius: 4px;
+        text-transform: uppercase;
     }
-    .menu-card {
-        background-color: #FFFFFF;
-        border: 1px solid #EAEAEA;
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 12px;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.03);
-    }
-    .menu-card-img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-        border-radius: 8px;
-        margin-bottom: 8px;
-    }
-    .menu-card-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: #1E1E1E;
-        height: 42px;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        line-height: 1.3;
-    }
-    .menu-card-portion {
-        font-size: 12px;
-        color: #777777;
-        height: 32px;
-        overflow: hidden;
-        margin-top: 4px;
-    }
-    .menu-card-price {
-        font-size: 16px;
+
+    /* Section Category Header */
+    .kfc-section-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 26px;
         font-weight: 800;
-        color: #8B0000;
-        margin: 6px 0;
+        color: #111111;
+        letter-spacing: 0.5px;
+        margin: 25px 0 15px 0;
+        border-bottom: 3px solid #E4002B;
+        display: inline-block;
+        padding-bottom: 4px;
+    }
+
+    /* KFC Menu Card */
+    .kfc-card {
+        background-color: #FFFFFF;
+        border: 1px solid #E8E8E8;
+        border-radius: 8px;
+        padding: 16px 14px 10px 14px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        margin-bottom: 8px;
+        transition: transform 0.2s ease;
+    }
+    .kfc-card:hover {
+        transform: translateY(-2px);
+    }
+
+    /* 3 Red KFC Stripes */
+    .kfc-stripes {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 12px;
+    }
+    .kfc-stripe {
+        width: 6px;
+        height: 18px;
+        background-color: #E4002B;
+        border-radius: 1px;
+    }
+
+    /* Card Title */
+    .kfc-title {
+        font-family: 'Oswald', sans-serif;
+        font-size: 19px;
+        font-weight: 700;
+        color: #111111;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        height: 48px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 6px;
+    }
+
+    /* Red Price Badge */
+    .kfc-price-badge {
+        position: absolute;
+        right: 0;
+        top: 65px;
+        background-color: #E4002B;
+        color: #FFFFFF;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
+        font-size: 15px;
+        padding: 4px 14px 4px 12px;
+        border-radius: 4px 0 0 4px;
+        box-shadow: -2px 2px 5px rgba(228, 0, 43, 0.3);
+        z-index: 2;
+    }
+
+    /* Normalized Fixed-Ratio Images */
+    .kfc-img-wrapper {
+        width: 100%;
+        height: 175px;
+        overflow: hidden;
+        border-radius: 6px;
+        margin: 10px 0 8px 0;
+        background-color: #F8F9FA;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .kfc-img-wrapper img {
+        width: 100% !important;
+        height: 175px !important;
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+
+    /* Subtitle Description */
+    .kfc-desc {
+        font-size: 12px;
+        color: #6E6E6E;
+        height: 36px;
+        overflow: hidden;
+        line-height: 1.3;
+        margin-bottom: 6px;
+    }
+
+    /* Streamlit Button Override (KFC Red) */
+    div.stButton > button {
+        background-color: #E4002B !important;
+        color: #FFFFFF !important;
+        font-family: 'Oswald', sans-serif !important;
+        font-size: 16px !important;
+        letter-spacing: 0.8px !important;
+        font-weight: 700 !important;
+        border: none !important;
+        border-radius: 4px !important;
+        padding: 6px 12px !important;
+        box-shadow: 0 2px 6px rgba(228, 0, 43, 0.25) !important;
+    }
+    div.stButton > button:hover {
+        background-color: #C00024 !important;
+        color: #FFFFFF !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# HELPER FUNCTIONS
+# TOP BRANDING NAVBAR
+# ============================================================
+total_cart_items = sum(st.session_state.cart.values())
+cart_text = f"🛒 CART ({total_cart_items})" if total_cart_items > 0 else "🛒 CART (0)"
+
+st.markdown(f"""
+<div class="kfc-navbar">
+    <div class="kfc-brand">🍗 ALFRED SHINWARI</div>
+    <div class="kfc-pills">
+        <span class="kfc-pill-active">🛵 DELIVERY</span>
+        <span class="kfc-pill-dim">🏪 PICKUP</span>
+    </div>
+    <div style="font-family:'Oswald',sans-serif; font-size:16px; font-weight:700; color:#E4002B;">
+        {cart_text}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Tabs
+tabs = st.tabs(["🔥 BEST SELLERS & MENU", "🛒 CART & CHECKOUT", "📍 LOCATION & CONTACT"])
+
+# ============================================================
+# HELPER ACTIONS
 # ============================================================
 def add_item(item_id):
     st.session_state.cart[item_id] = st.session_state.cart.get(item_id, 0) + 1
-    st.toast(f"Added {ITEM_LOOKUP[item_id]['name']} to cart! 🛒")
+    st.toast(f"Added {ITEM_LOOKUP[item_id]['name']}! 🍗")
 
 def remove_item(item_id):
     if item_id in st.session_state.cart:
@@ -258,14 +358,8 @@ def remove_item(item_id):
         else:
             del st.session_state.cart[item_id]
 
-def clear_entire_cart():
-    st.session_state.cart = {}
-
 def record_order_locally(name, phone, address, cart_dict, grand_total):
-    items_desc = ", ".join([
-        f"{ITEM_LOOKUP[k]['name']} (x{qty})" 
-        for k, qty in cart_dict.items()
-    ])
+    items_desc = ", ".join([f"{ITEM_LOOKUP[k]['name']} (x{qty})" for k, qty in cart_dict.items()])
     record = {
         "Timestamp": [datetime.now().strftime("%Y-%m-%d %H:%M:%S")],
         "Customer": [name],
@@ -295,78 +389,78 @@ def push_ntfy_notification(name, phone, address, note, cart_dict, subtotal, gran
         f"TOTAL BILL: Rs. {grand_total}"
     )
     
-    # Using JSON format completely avoids HTTP header encoding issues
-    payload = {
-        "topic": NTFY_TOPIC,
-        "title": f"New Order: Rs. {grand_total} ({name})",
-        "message": body,
-        "priority": 5,
-        "tags": ["rotating_light", "meat_on_bone", "dollar"]
-    }
-    
     requests.post(
         "https://ntfy.sh",
-        json=payload,
+        json={
+            "topic": NTFY_TOPIC,
+            "title": f"New Order: Rs. {grand_total} ({name})",
+            "message": body,
+            "priority": 5,
+            "tags": ["poultry_leg", "rotating_light", "dollar"]
+        },
         timeout=10
     )
 
 # ============================================================
-# MAIN UI
+# TAB 1: KFC STYLE MENU
 # ============================================================
-st.markdown("""
-<div class="hero-banner">
-    <h1>🍖 Alfred Shanwari & Restaurant</h1>
-    <p>Authentic Shinwari Karahi, Fresh Charcoal BBQ & Traditional Kahwa • Chowk Azam</p>
-</div>
-""", unsafe_allow_html=True)
-
-tabs = st.tabs(["📖 Full Menu", "🛒 Cart & Checkout", "📍 Restaurant Location"])
-
 with tabs[0]:
-    search_query = st.text_input("🔍 Quick Search Menu", placeholder="Search Karahi, Chapli Kebab, Naan...").strip().lower()
+    search_query = st.text_input("Search menu", placeholder="🔍 Search Karahi, Chapli Kebab, Naan...", label_visibility="collapsed").strip().lower()
 
     for category_block in MENU_DATA:
-        filtered_items = [
+        items_to_show = [
             it for it in category_block["items"]
-            if not search_query or search_query in it["name"].lower() or search_query in it["portion"].lower()
+            if not search_query or search_query in it["name"].lower() or search_query in it["desc"].lower()
         ]
         
-        if not filtered_items:
+        if not items_to_show:
             continue
 
-        st.subheader(category_block["category"])
-        cols = st.columns(4)
+        st.markdown(f'<div class="kfc-section-title">{category_block["category"]}</div>', unsafe_allow_html=True)
         
-        for idx, itm in enumerate(filtered_items):
-            current_col = cols[idx % 4]
-            with current_col:
+        # 4-Column Grid matching KFC layout
+        cols = st.columns(4)
+        for idx, itm in enumerate(items_to_show):
+            with cols[idx % 4]:
+                # KFC Card Structure with unified height & stripes
                 st.markdown(f"""
-                <div class="menu-card">
-                    <img class="menu-card-img" src="{itm['img']}" />
-                    <div class="menu-card-title">{itm['name']}</div>
-                    <div class="menu-card-portion">{itm['portion']}</div>
-                    <div class="menu-card-price">Rs. {itm['price']:,}</div>
+                <div class="kfc-card">
+                    <div class="kfc-stripes">
+                        <div class="kfc-stripe"></div>
+                        <div class="kfc-stripe"></div>
+                        <div class="kfc-stripe"></div>
+                    </div>
+                    <div class="kfc-title">{itm['name']}</div>
+                    <div class="kfc-price-badge">Rs {itm['price']:,}</div>
+                    <div class="kfc-img-wrapper">
+                        <img src="{itm['img']}" />
+                    </div>
+                    <div class="kfc-desc">{itm['desc']}</div>
                 </div>
                 """, unsafe_allow_html=True)
-                
+
+                # Add to Cart / Quantity Selector
                 current_qty = st.session_state.cart.get(itm["id"], 0)
                 if current_qty == 0:
-                    st.button("Add to Cart 🛒", key=f"add_{itm['id']}", on_click=add_item, args=(itm["id"],), use_container_width=True)
+                    st.button("ADD TO BUCKET 🛒", key=f"add_{itm['id']}", on_click=add_item, args=(itm["id"],), use_container_width=True)
                 else:
                     b1, b2, b3 = st.columns([1, 1.2, 1])
                     with b1:
                         st.button("−", key=f"min_{itm['id']}", on_click=remove_item, args=(itm["id"],), use_container_width=True)
                     with b2:
-                        st.markdown(f"<div style='text-align:center;font-weight:700;padding-top:6px;'>{current_qty}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='text-align:center;font-family:Oswald;font-weight:700;font-size:18px;padding-top:4px;'>{current_qty}</div>", unsafe_allow_html=True)
                     with b3:
                         st.button("+", key=f"pls_{itm['id']}", on_click=add_item, args=(itm["id"],), use_container_width=True)
-                st.write("") 
+                st.write("")
 
+# ============================================================
+# TAB 2: CART & CHECKOUT
+# ============================================================
 with tabs[1]:
-    st.subheader("🛒 Current Order Details")
+    st.markdown('<div class="kfc-section-title">YOUR ORDER BUCKET</div>', unsafe_allow_html=True)
     
     if not st.session_state.cart:
-        st.info("Your cart is empty. Click '+ Add to Cart' on any dish in the menu to begin.")
+        st.info("Your bucket is currently empty. Head over to the menu to add your favorite Shinwari items!")
     else:
         subtotal = 0
         for itm_id, qty in list(st.session_state.cart.items()):
@@ -376,9 +470,9 @@ with tabs[1]:
             
             c1, c2, c3 = st.columns([4, 2, 1])
             with c1:
-                st.markdown(f"**{details['name']}**  \n<small>{details['portion']}</small>", unsafe_allow_html=True)
+                st.markdown(f"**{details['name']}**  \n<small style='color:#666;'>{details['desc']}</small>", unsafe_allow_html=True)
             with c2:
-                st.write(f"Rs. {details['price']} × {qty} = **Rs. {line_total}**")
+                st.write(f"Rs {details['price']:,} × {qty} = **Rs {line_total:,}**")
             with c3:
                 if st.button("✕", key=f"del_{itm_id}"):
                     del st.session_state.cart[itm_id]
@@ -389,22 +483,24 @@ with tabs[1]:
         
         col_s1, col_s2 = st.columns(2)
         with col_s1:
-            st.write(f"Subtotal: **Rs. {subtotal}**")
-            st.write(f"Delivery Charge: **Rs. {DELIVERY_FEE}**")
-            st.markdown(f"### Grand Total: Rs. {grand_total}")
+            st.write(f"Subtotal: **Rs {subtotal:,}**")
+            st.write(f"Delivery Fee: **Rs {DELIVERY_FEE:,}**")
+            st.markdown(f"### Total Payable: Rs {grand_total:,}")
         with col_s2:
-            st.button("Clear Entire Cart", on_click=clear_entire_cart)
+            if st.button("Empty Bucket"):
+                st.session_state.cart = {}
+                st.rerun()
             
         st.markdown("---")
-        st.subheader("📦 Delivery Information")
+        st.markdown('<div class="kfc-section-title">DELIVERY DETAILS</div>', unsafe_allow_html=True)
         
-        with st.form("ntfy_order_form"):
-            cust_name = st.text_input("Full Name *", placeholder="e.g., Muhammad Ali")
+        with st.form("kfc_checkout_form"):
+            cust_name = st.text_input("Full Name *", placeholder="e.g. Tariq Khan")
             cust_phone = st.text_input("Phone Number *", placeholder="03001234567")
             cust_address = st.text_area("Complete Address *", placeholder="House/Shop #, Street, Mohallah / Ward, Chowk Azam")
-            cust_notes = st.text_input("Special Cooking Request (Optional)", placeholder="Less spicy, extra lemons, soft naan...")
+            cust_notes = st.text_input("Special Cooking Request (Optional)", placeholder="Less spicy, extra lemons...")
             
-            submit_btn = st.form_submit_button("Confirm & Place Order", type="primary", use_container_width=True)
+            submit_btn = st.form_submit_button("PLACE ORDER NOW", use_container_width=True)
             
             if submit_btn:
                 if not cust_name.strip() or not cust_phone.strip() or not cust_address.strip():
@@ -413,16 +509,18 @@ with tabs[1]:
                     try:
                         record_order_locally(cust_name, cust_phone, cust_address, st.session_state.cart, grand_total)
                         push_ntfy_notification(cust_name, cust_phone, cust_address, cust_notes, st.session_state.cart, subtotal, grand_total)
-                        
                         st.balloons()
-                        st.success("🎉 Your order has been placed successfully! The kitchen has received your details and is preparing your food.")
-                        st.session_state.cart = {} 
+                        st.success("🎉 Your order has been placed! The restaurant kitchen has received your ticket.")
+                        st.session_state.cart = {}
                     except Exception as err:
-                        st.error(f"Could not dispatch instant push notification: {err}")
+                        st.error(f"Could not transmit instant alert: {err}")
 
+# ============================================================
+# TAB 3: RESTAURANT INFO
+# ============================================================
 with tabs[2]:
-    st.subheader("📍 Alfred Shanwari & Restaurant")
+    st.markdown('<div class="kfc-section-title">VISIT ALFRED SHINWARI</div>', unsafe_allow_html=True)
     st.write("**Address:** Layyah Rd, near dessert bit, Ward No. 2, Chowk Azam")
-    st.write("**Hours:** Open 24 Hours • 7 Days a Week")
-    st.write("**Call & Support:** 0302 6200764")
-    st.link_button("🗺️ Open Google Maps Directions", GOOGLE_MAPS_LINK, use_container_width=True)
+    st.write("**Operating Hours:** Open 24 Hours • 7 Days a Week")
+    st.write("**Phone Order Hotline:** 0302 6200764")
+    st.link_button("🗺️ Open in Google Maps", GOOGLE_MAPS_LINK, use_container_width=True)
