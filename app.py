@@ -75,7 +75,7 @@ MENU_DATA = [
             {
                 "id": "bbq_2", "name": "Chicken Malai Boti", "price": 650,
                 "desc": "8 Tender Skewers marinated in Velvet Fresh Cream",
-                "img": "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?w=600&auto=format&fit=crop&q=80"
+                "img": "https://unsplash.com/photos/a-tray-of-chicken-wings-with-a-side-of-dipping-sauce-R25pvpErlsI"
             },
             {
                 "id": "bbq_3", "name": "Mutton Tikka Boti", "price": 950,
