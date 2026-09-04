@@ -283,18 +283,29 @@ def record_order_locally(name, phone, address, cart_dict, grand_total):
         df.to_csv(ORDERS_FILE, mode='a', header=False, index=False)
 
 def push_ntfy_notification(name, phone, address, note, cart_dict, subtotal, grand_total):
-    lines = [f"• {ITEM_LOOKUP[k]['name']} x {qty} = Rs. {ITEM_LOOKUP[k]['price'] * qty}" for k, qty in cart_dict.items()]
+    lines = [f"- {ITEM_LOOKUP[k]['name']} x {qty} = Rs. {ITEM_LOOKUP[k]['price'] * qty}" for k, qty in cart_dict.items()]
     summary_text = "\n".join(lines)
     
     body = (
-        f"👤 Customer: {name}\n"
-        f"📞 Phone: {phone}\n"
-        f"📍 Address: {address}\n"
-        f"📝 Instructions: {note if note else 'None'}\n\n"
-        f"🍽️ ORDER ITEMS:\n{summary_text}\n\n"
+        f"Customer: {name}\n"
+        f"Phone: {phone}\n"
+        f"Address: {address}\n"
+        f"Instructions: {note if note else 'None'}\n\n"
+        f"ORDER ITEMS:\n{summary_text}\n\n"
         f"Subtotal: Rs. {subtotal}\n"
         f"Delivery Fee: Rs. {DELIVERY_FEE}\n"
-        f"💰 TOTAL BILL: Rs. {grand_total}"
+        f"TOTAL BILL: Rs. {grand_total}"
+    )
+    
+    requests.post(
+        f"https://ntfy.sh/{NTFY_TOPIC}",
+        data=body.encode("utf-8"),
+        headers={
+            "Title": f"NEW ORDER: Rs. {grand_total} ({name})",
+            "Priority": "urgent",
+            "Tags": "rotating_light,meat_on_bone,dollar"
+        },
+        timeout=8
     )
     
     requests.post(
