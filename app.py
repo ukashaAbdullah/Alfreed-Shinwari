@@ -80,7 +80,7 @@ with tabs[0]:
     for i, col in enumerate(cols):
         with col:
             item = featured_items[i]
-            st.image(item["img"], use_column_width=True)
+            st.image(item["img"], use_container_width=True)
             st.write(f"**{item['name']}**")
             st.write(f"Rs. {item['price']}")
             st.button("Add to Cart", key=f"feat_{i}", on_click=add_to_cart, args=(item["name"], item["price"]))
@@ -101,7 +101,7 @@ with tabs[1]:
         for i, col in enumerate(item_cols):
             with col:
                 item = items[i]
-                st.image(item["img"], use_column_width=True)
+                st.image(item["img"], use_container_width=True)
                 st.write(f"**{item['name']}**")
                 st.write(f"Rs. {item['price']}")
                 st.button("Add to Cart", key=f"menu_{category}_{i}", on_click=add_to_cart, args=(item["name"], item["price"]))
