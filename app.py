@@ -14,7 +14,8 @@ st.set_page_config(
 )
 
 # Put the exact topic you subscribed to in the ntfy mobile app here:
-NTFY_TOPIC = "alfred_orders_chowk99" 
+NTFY_TOPIC = "your_secret_topic_here" 
+
 ORDERS_FILE = "orders.csv"
 GOOGLE_MAPS_LINK = "https://maps.app.goo.gl/hBRGvxccnKNYkEAAA"
 DELIVERY_FEE = 150
@@ -173,7 +174,6 @@ ITEM_LOOKUP = {
 # ============================================================
 st.markdown("""
 <style>
-    /* Compact Banner Styling */
     .hero-banner {
         position: relative;
         height: 220px;
@@ -202,8 +202,6 @@ st.markdown("""
         font-size: 15px;
         margin: 6px 0 0 0;
     }
-
-    /* Fixed Card Height & Unified Area */
     .menu-card {
         background-color: #FFFFFF;
         border: 1px solid #EAEAEA;
@@ -297,6 +295,7 @@ def push_ntfy_notification(name, phone, address, note, cart_dict, subtotal, gran
         f"TOTAL BILL: Rs. {grand_total}"
     )
     
+    # Using JSON format completely avoids HTTP header encoding issues
     payload = {
         "topic": NTFY_TOPIC,
         "title": f"New Order: Rs. {grand_total} ({name})",
@@ -310,31 +309,9 @@ def push_ntfy_notification(name, phone, address, note, cart_dict, subtotal, gran
         json=payload,
         timeout=10
     )
-    
-    requests.post(
-        f"https://ntfy.sh/{NTFY_TOPIC}",
-        data=body.encode("utf-8"),
-        headers={
-            "Title": f"NEW ORDER: Rs. {grand_total} ({name})",
-            "Priority": "urgent",
-            "Tags": "rotating_light,meat_on_bone,dollar"
-        },
-        timeout=8
-    )
-    
-    requests.post(
-        f"https://ntfy.sh/{NTFY_TOPIC}",
-        data=body.encode("utf-8"),
-        headers={
-            "Title": f"🚨 NEW ORDER: Rs. {grand_total} ({name})",
-            "Priority": "urgent",
-            "Tags": "meat_on_bone,bell,dollar"
-        },
-        timeout=8
-    )
 
 # ============================================================
-# COMPACT BANNER (REPLACES GIANT IMAGE)
+# MAIN UI
 # ============================================================
 st.markdown("""
 <div class="hero-banner">
@@ -343,17 +320,12 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Navigation tabs
 tabs = st.tabs(["📖 Full Menu", "🛒 Cart & Checkout", "📍 Restaurant Location"])
 
-# ============================================================
-# TAB 1: MENU WITH UNIFORM SIZED CARDS
-# ============================================================
 with tabs[0]:
     search_query = st.text_input("🔍 Quick Search Menu", placeholder="Search Karahi, Chapli Kebab, Naan...").strip().lower()
 
     for category_block in MENU_DATA:
-        # Filter items by search
         filtered_items = [
             it for it in category_block["items"]
             if not search_query or search_query in it["name"].lower() or search_query in it["portion"].lower()
@@ -363,13 +335,11 @@ with tabs[0]:
             continue
 
         st.subheader(category_block["category"])
-        
-        # Display cards in a rigid 4-column grid
         cols = st.columns(4)
+        
         for idx, itm in enumerate(filtered_items):
             current_col = cols[idx % 4]
             with current_col:
-                # Custom uniform HTML Card with fixed height & cover images
                 st.markdown(f"""
                 <div class="menu-card">
                     <img class="menu-card-img" src="{itm['img']}" />
@@ -379,7 +349,6 @@ with tabs[0]:
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Dynamic Add/Quantity buttons
                 current_qty = st.session_state.cart.get(itm["id"], 0)
                 if current_qty == 0:
                     st.button("Add to Cart 🛒", key=f"add_{itm['id']}", on_click=add_item, args=(itm["id"],), use_container_width=True)
@@ -391,19 +360,14 @@ with tabs[0]:
                         st.markdown(f"<div style='text-align:center;font-weight:700;padding-top:6px;'>{current_qty}</div>", unsafe_allow_html=True)
                     with b3:
                         st.button("+", key=f"pls_{itm['id']}", on_click=add_item, args=(itm["id"],), use_container_width=True)
-                
-                st.write("") # Margin spacing
+                st.write("") 
 
-# ============================================================
-# TAB 2: CART & NTFY CHECKOUT
-# ============================================================
 with tabs[1]:
     st.subheader("🛒 Current Order Details")
     
     if not st.session_state.cart:
         st.info("Your cart is empty. Click '+ Add to Cart' on any dish in the menu to begin.")
     else:
-        # Table of items
         subtotal = 0
         for itm_id, qty in list(st.session_state.cart.items()):
             details = ITEM_LOOKUP[itm_id]
@@ -447,25 +411,18 @@ with tabs[1]:
                     st.error("Please complete Name, Phone, and Delivery Address before checking out.")
                 else:
                     try:
-                        # 1. Store order to disk
                         record_order_locally(cust_name, cust_phone, cust_address, st.session_state.cart, grand_total)
-                        
-                        # 2. Transmit instant alert straight to owner's ntfy app
                         push_ntfy_notification(cust_name, cust_phone, cust_address, cust_notes, st.session_state.cart, subtotal, grand_total)
                         
-                        # 3. Present confirmation to client
                         st.balloons()
                         st.success("🎉 Your order has been placed successfully! The kitchen has received your details and is preparing your food.")
-                        clear_entire_cart()
+                        st.session_state.cart = {} 
                     except Exception as err:
                         st.error(f"Could not dispatch instant push notification: {err}")
 
-# ============================================================
-# TAB 3: LOCATION & CONTACT
-# ============================================================
 with tabs[2]:
     st.subheader("📍 Alfred Shanwari & Restaurant")
     st.write("**Address:** Layyah Rd, near dessert bit, Ward No. 2, Chowk Azam")
     st.write("**Hours:** Open 24 Hours • 7 Days a Week")
-    st.write("**Call & Support:** 0320 4335045")
+    st.write("**Call & Support:** 0302 6200764")
     st.link_button("🗺️ Open Google Maps Directions", GOOGLE_MAPS_LINK, use_container_width=True)
